@@ -9,9 +9,9 @@ import javax.inject.Inject
 
 class FetchWeatherUseCaseImpl @Inject constructor(private val repository: WeatherRepository) : FetchWeatherUseCase {
 
-    override fun fetch(token: String) = flow {
+    override suspend fun fetch(token: String, town: String?) = flow {
         emit(CloudResponse.Loading())
-        emit(repository.fetchWeather(token))
+        emit(repository.fetchWeather(token, town))
     }.catch {
         emit(CloudResponse.Error(it))
     }

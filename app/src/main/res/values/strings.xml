@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">LWO Weather</string>
+    <string name="ok">OK</string>
+    <string name="something_is_wrong">Что-то не так, попробуйте позже</string>
+    <string name="error_loading_data">Не удалось загрузить данные.\nПроверьте интернет-соединение</string>
+    <string name="server_error">Превышен лимит ожидания ответа от сервера. Проверьте подключение к Сети</string>
 </resources>
