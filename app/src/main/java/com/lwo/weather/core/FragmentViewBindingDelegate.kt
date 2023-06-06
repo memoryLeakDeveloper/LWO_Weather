@@ -11,10 +11,9 @@ import kotlin.reflect.KProperty
 
 inline fun <reified T : ViewBinding> Fragment.viewBinding() = FragmentViewBindingDelegate(T::class.java, this)
 
-class FragmentViewBindingDelegate<T : ViewBinding>(private val bindingClass: Class<T>, val fragment: Fragment) :
-    ReadOnlyProperty<Fragment, T> {
-    private var binding: T? = null
+class FragmentViewBindingDelegate<T : ViewBinding>(bindingClass: Class<T>, val fragment: Fragment) : ReadOnlyProperty<Fragment, T> {
 
+    private var binding: T? = null
     private val bindMethod = bindingClass.getMethod("bind", View::class.java)
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T {

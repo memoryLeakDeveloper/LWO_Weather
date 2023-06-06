@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface FetchWeatherUseCase {
 
-    suspend fun fetch(token: String, town: String?): Flow<CloudResponse<CurrentWeatherComposeData>>
+    suspend fun fetch(token: String, city: String?): Flow<CloudResponse<CurrentWeatherComposeData>>
 }

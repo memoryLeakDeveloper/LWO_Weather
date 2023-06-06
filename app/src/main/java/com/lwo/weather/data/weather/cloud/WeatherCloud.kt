@@ -1,31 +1,30 @@
 package com.lwo.weather.data.weather.cloud
 
+import com.google.gson.annotations.SerializedName
 import com.lwo.weather.data.weather.data.WeatherData
 
 data class WeatherCloud(
-    val lastUpdated: String?,
-    val lastUpdatedEpoch: Int?,
-    val tempC: Float?,
-    val tempF: Float?,
-    val feelslikeC: Float?,
-    val feelslikeF: Float?,
-    val conditionText: String?,
-    val conditionIcon: String?,
-    val conditionCode: Int?,
-    val windMph: Float?,
-    val windKph: Float?,
-    val windDegree: Int?,
-    val windDir: String?,
-    val pressureMb: Float?,
-    val pressureIn: Float?,
-    val precipMm: Float?,
-    val precipIn: Float?,
-    val humidity: Int?,
-    val cloud: Int?,
-    val isDay: Int?,
-    val uv: Float?,
-    val gustMph: Float?,
-    val gustKph: Float?
+    @SerializedName("last_updated") val lastUpdated: String?,
+    @SerializedName("last_updated_epoch") val lastUpdatedEpoch: Int?,
+    @SerializedName("temp_c") val tempC: Float?,
+    @SerializedName("temp_f") val tempF: Float?,
+    @SerializedName("feelslike_c") val feelslikeC: Float?,
+    @SerializedName("feelslike_f") val feelslikeF: Float?,
+    @SerializedName("condition") val condition: ConditionCloud?,
+    @SerializedName("wind_mph") val windMph: Float?,
+    @SerializedName("wind_kph") val windKph: Float?,
+    @SerializedName("wind_degree") val windDegree: Int?,
+    @SerializedName("wind_dir") val windDir: String?,
+    @SerializedName("pressure_mb") val pressureMb: Float?,
+    @SerializedName("pressure_in") val pressureIn: Float?,
+    @SerializedName("precip_mm") val precipMm: Float?,
+    @SerializedName("precip_in") val precipIn: Float?,
+    @SerializedName("humidity") val humidity: Int?,
+    @SerializedName("cloud") val cloud: Int?,
+    @SerializedName("is_day") val isDay: Int?,
+    @SerializedName("uv") val uv: Float?,
+    @SerializedName("gust_mph") val gustMph: Float?,
+    @SerializedName("gust_kph") val gustKph: Float?
 )
 
 fun WeatherCloud.mapToData() = WeatherData(
@@ -35,9 +34,7 @@ fun WeatherCloud.mapToData() = WeatherData(
     tempF,
     feelslikeC,
     feelslikeF,
-    conditionText,
-    conditionIcon,
-    conditionCode,
+    condition?.mapToData(),
     windMph,
     windKph,
     windDegree,

@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class FetchWeatherDataSourceImpl @Inject constructor(private val service: FetchWeatherService) : FetchWeatherDataSource {
 
-    override suspend fun fetch(token: String, town: String?): CloudResponse<CurrentWeatherComposeData> {
-        val response = service.fetchWeather(token, town ?: run { "Minsk" })
+    override suspend fun fetch(token: String, city: String?): CloudResponse<CurrentWeatherComposeData> {
+        val response = service.fetchWeather(token, city ?: run { "Minsk" })
         return if (response.isSuccessful) {
             response.body()?.let { CloudResponse.Success(it.mapToData()) } ?: run { CloudResponse.Error(Exception()) }
         } else {

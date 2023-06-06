@@ -6,6 +6,6 @@ import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(private val fetchWeatherDataSource: FetchWeatherDataSource) : WeatherRepository {
 
-    override suspend fun fetchWeather(token: String, town: String?) = fetchWeatherDataSource.fetch(token, town)
+    override suspend fun fetchWeather(token: String, city: String?) = fetchWeatherDataSource.fetch(token, city)
 
 }

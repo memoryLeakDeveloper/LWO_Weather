@@ -5,5 +5,5 @@ import com.lwo.weather.data.weather.data.CurrentWeatherComposeData
 
 interface WeatherRepository {
 
-    suspend fun fetchWeather(token: String, town: String?): CloudResponse<CurrentWeatherComposeData>
+    suspend fun fetchWeather(token: String, city: String?): CloudResponse<CurrentWeatherComposeData>
 }
