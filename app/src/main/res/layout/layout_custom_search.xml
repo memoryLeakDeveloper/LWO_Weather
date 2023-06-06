@@ -16,10 +16,10 @@
         app:boxCornerRadiusBottomEnd="20dp"
         app:boxCornerRadiusBottomStart="20dp"
         app:boxCornerRadiusTopEnd="20dp"
-        app:endIconMode="clear_text"
-        app:endIconDrawable="@drawable/ic_cross"
         app:boxCornerRadiusTopStart="20dp"
-        app:boxStrokeErrorColor="@color/red">
+        app:boxStrokeErrorColor="@color/red"
+        app:endIconDrawable="@drawable/ic_cross"
+        app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search"
@@ -29,5 +29,12 @@
             android:textSize="18sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_cities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:itemCount="4"
+        tools:listitem="@layout/item_city" />
 
 </merge>

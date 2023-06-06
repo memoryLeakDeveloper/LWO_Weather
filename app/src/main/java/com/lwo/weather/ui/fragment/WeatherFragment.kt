@@ -1,6 +1,8 @@
 package com.lwo.weather.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
 import android.text.format.DateFormat
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -29,17 +31,23 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
     private val viewModel: WeatherViewModel by fragmentViewModel()
     private val binding: FragmentWeatherLayoutBinding by viewBinding()
     private var loadingDialog = LoadingDialog()
+    private val searchCallback: (Editable?) -> Unit = {
+        it?.let {
+            viewModel.processEvent(UiEvent.Search(it.toString()))
+            bugger(it.toString())
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root
+        binding.search.setSearchCallback(searchCallback)
     }
 
     override fun invalidate(): Unit = withState(viewModel) { state ->
-        bugger(state)
         handleState(state)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun handleState(state: ScreenState) {
         when (state.getState()) {
             State.Loading -> {
@@ -71,9 +79,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
                             search.focus()
                         }
                     }
-
                 }
-
             }
 
             State.Error -> {

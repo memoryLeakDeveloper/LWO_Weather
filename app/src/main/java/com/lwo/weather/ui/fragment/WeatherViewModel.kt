@@ -39,8 +39,17 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
+    fun processEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.Search -> {
+                if (event.query.trim().isBlank()) return
+                searchCitiesByQuery(event.query)
+            }
+        }
+    }
+
     private fun searchCitiesByQuery(query: String) = viewModelScope.launch {
-        searchCitiesUseCase.search(Api.API_KEY, "a").collect {
+        searchCitiesUseCase.search(Api.API_KEY, query).collect {
             it.getResult(
                 success = {
                     bugger(it.result)
