@@ -4,4 +4,9 @@
     <string name="something_is_wrong">Что-то не так, попробуйте позже</string>
     <string name="error_loading_data">Не удалось загрузить данные.\nПроверьте интернет-соединение</string>
     <string name="server_error">Превышен лимит ожидания ответа от сервера. Проверьте подключение к Сети</string>
+    <string name="temp">%s \u2103</string>
+    <string name="wind">%s kph</string>
+    <string name="humidity">%s %%</string>
+    <string name="search_city">Search city</string>
+
 </resources>
