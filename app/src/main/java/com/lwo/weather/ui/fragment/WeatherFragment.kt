@@ -18,6 +18,7 @@ import com.lwo.weather.databinding.FragmentWeatherLayoutBinding
 import com.lwo.weather.ui.custom.LoadingDialog
 import com.lwo.weather.ui.fragment.state.ScreenState
 import com.lwo.weather.ui.fragment.state.State
+import com.lwo.weather.ui.fragment.state.UiEvent
 import com.lwo.weather.ui.fragment.state.getState
 import com.lwo.weather.utils.bugger
 import com.lwo.weather.utils.hideKeyboard
@@ -32,59 +33,85 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
     private val binding: FragmentWeatherLayoutBinding by viewBinding()
     private var loadingDialog = LoadingDialog()
     private val searchCallback: (Editable?) -> Unit = {
-        it?.let {
-            viewModel.processEvent(UiEvent.Search(it.toString()))
-            bugger(it.toString())
-        }
+        it?.let { viewModel.processEvent(UiEvent.Search(it.toString())) }
+    }
+    private val clickCallback: (String) -> Unit = {
+        viewModel.processEvent(UiEvent.NewCity(it))
+        requireView().hideKeyboard()
+        binding.search.toGone()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.search.setSearchCallback(searchCallback)
+        binding.search.setSearchCallback(searchCallback, clickCallback)
     }
 
     override fun invalidate(): Unit = withState(viewModel) { state ->
-        handleState(state)
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun handleState(state: ScreenState) {
         when (state.getState()) {
             State.Loading -> {
                 loadingDialog.showDialog(requireContext())
             }
 
             State.Success -> {
-                loadingDialog.hideDialog()
-                state.data?.let { data ->
-                    binding.apply {
-                        //todo isDay
-                        root.background = AppCompatResources.getDrawable(
-                            requireContext(), if (data.current?.isDay == 1) R.drawable.day else R.drawable.night
-                        )
-                        root.setOnTouchListener { v, event ->
-                            requireView().hideKeyboard()
-                            search.toGone()
-                            false
-                        }
-                        tvDate.text = getCurrentDateString()
-                        tvCity.text = data.location?.name
-                        tvTemp.text = requireContext().getString(R.string.temp, data.current?.tempC ?: "No data")
-                        tvWind.text = requireContext().getString(R.string.wind, data.current?.windKph ?: "No data")
-                        tvHumidity.text = requireContext().getString(R.string.humidity, data.current?.humidity ?: "No data")
-                        tvCondition.text = data.current?.conditionData?.text
-                        Glide.with(requireContext()).load(data.current?.conditionData?.getConditionIcon()).into(ivCondition)
-                        ivSearch.setOnClickListener {
-                            search.toVisible()
-                            search.focus()
-                        }
-                    }
-                }
+                handleSuccessState(state)
+            }
+
+            State.Search -> {
+                bugger(state.search)
+                binding.search.updateList(state.search ?: emptyList())
             }
 
             State.Error -> {
                 loadingDialog.hideDialog()
                 requireView().showSnackBar(ExceptionHandler.recognizeReason(state.error))
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun handleSuccessState(state: ScreenState) = binding.apply {
+        loadingDialog.hideDialog()
+        state.data?.let { data ->
+            root.background = AppCompatResources.getDrawable(requireContext(), if (data.isDay) R.drawable.day else R.drawable.night)
+            root.setOnTouchListener { _, _ ->
+                requireView().hideKeyboard()
+                search.toGone()
+                false
+            }
+            tvDate.text = getCurrentDateString()
+            tvCity.text = data.city
+            tvTemp.text = requireContext().getString(R.string.temp, data.temp ?: "No data")
+            tvWind.text = requireContext().getString(R.string.wind, data.wind ?: "No data")
+            tvHumidity.text = requireContext().getString(R.string.humidity, data.humidity ?: "No data")
+            tvCondition.text = data.condition
+            Glide.with(requireContext()).load(data.conditionIcon).into(ivCondition)
+            ivSearch.setOnClickListener {
+                search.toVisible()
+                search.focus()
+            }
+            if (data.forecast?.size != 3) {
+                requireView().showSnackBar(R.string.something_is_wrong)
+                return@apply
+            }
+            data.forecast.forEachIndexed { index, forecastDataUi ->
+                when (index) {
+                    0 -> {
+                        Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast1)
+                        tvForecast1Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                    }
+
+                    1 -> {
+                        Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast2)
+                        tvForecast2Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                    }
+
+                    2 -> {
+                        Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast3)
+                        tvForecast3Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                        tvForecast3Day.text =
+                            resources.getStringArray(R.array.day_of_week)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 1]
+                    }
+                }
             }
         }
     }

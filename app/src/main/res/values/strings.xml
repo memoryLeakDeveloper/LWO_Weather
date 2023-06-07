@@ -8,5 +8,14 @@
     <string name="wind">%s kph</string>
     <string name="humidity">%s %%</string>
     <string name="search_city">Search city</string>
+    <array name="day_of_week">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </array>
 
 </resources>

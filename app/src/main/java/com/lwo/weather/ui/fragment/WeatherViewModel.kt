@@ -6,10 +6,11 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.lwo.weather.core.cloud.Api
 import com.lwo.weather.core.cloud.getResult
+import com.lwo.weather.data.weather.data.mapToUi
 import com.lwo.weather.domain.usecase.FetchWeatherUseCase
 import com.lwo.weather.domain.usecase.SearchCitiesUseCase
 import com.lwo.weather.ui.fragment.state.ScreenState
-import com.lwo.weather.utils.bugger
+import com.lwo.weather.ui.fragment.state.UiEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -22,28 +23,18 @@ class WeatherViewModel @AssistedInject constructor(
 ) : MavericksViewModel<ScreenState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            fetchWeatherUseCase.fetch(Api.API_KEY, null).collect {
-                it.getResult(
-                    success = {
-                        setState { ScreenState(data = it.result) }
-                    },
-                    failure = {
-                        setState { ScreenState(error = it.exception) }
-                    },
-                    loading = {
-                        setState { ScreenState(loading = true) }
-                    }
-                )
-            }
-        }
+        fetchWeatherInCity(null)
     }
 
     fun processEvent(event: UiEvent) {
         when (event) {
             is UiEvent.Search -> {
+                searchCitiesByQuery(event.query.trim())
+            }
+
+            is UiEvent.NewCity -> {
                 if (event.query.trim().isBlank()) return
-                searchCitiesByQuery(event.query)
+                fetchWeatherInCity(event.query)
             }
         }
     }
@@ -52,10 +43,10 @@ class WeatherViewModel @AssistedInject constructor(
         searchCitiesUseCase.search(Api.API_KEY, query).collect {
             it.getResult(
                 success = {
-                    bugger(it.result)
+                    setState { ScreenState(search = it.result) }
                 },
                 failure = {
-                    bugger(it.exception)
+                    setState { ScreenState(search = emptyList()) }
                 },
                 loading = {
 
@@ -63,14 +54,14 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
-    private fun fetchWeatherInCity(city: String) = viewModelScope.launch {
+    private fun fetchWeatherInCity(city: String?) = viewModelScope.launch {
         fetchWeatherUseCase.fetch(Api.API_KEY, city).collect {
             it.getResult(
                 success = {
-                    bugger(it.result)
+                    setState { ScreenState(data = it.result.mapToUi()) }
                 },
                 failure = {
-                    bugger(it.exception)
+                    setState { ScreenState(error = it.exception) }
                 },
                 loading = {
                     setState { ScreenState(loading = true) }
