@@ -17,4 +17,9 @@ fun CurrentWeatherComposeData.mapToUi() = WeatherDataUi(
     current?.humidity,
     current?.conditionData?.text ?: "No data",
     current?.conditionData?.getConditionIcon(),
-    forecast?.forecast?.map { ForecastDataUi(it.day.condition?.getConditionIcon(), it.day.mintempC.toString().plus("/").plus(it.day.maxtempC)) })
+    forecast?.forecast?.map {
+        ForecastDataUi(
+            it.day.condition?.getConditionIcon(),
+            it.day.mintempC.toString().plus("/").plus(it.day.maxtempC)
+        )
+    })

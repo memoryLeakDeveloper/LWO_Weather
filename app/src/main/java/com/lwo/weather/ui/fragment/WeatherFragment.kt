@@ -21,10 +21,8 @@ import com.lwo.weather.ui.fragment.state.State
 import com.lwo.weather.ui.fragment.state.UiEvent
 import com.lwo.weather.ui.fragment.state.getState
 import com.lwo.weather.utils.bugger
-import com.lwo.weather.utils.hideKeyboard
+import com.lwo.weather.utils.setTextAnimation
 import com.lwo.weather.utils.showSnackBar
-import com.lwo.weather.utils.toGone
-import com.lwo.weather.utils.toVisible
 import java.util.Calendar
 
 class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksView {
@@ -37,8 +35,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
     }
     private val clickCallback: (String) -> Unit = {
         viewModel.processEvent(UiEvent.NewCity(it))
-        requireView().hideKeyboard()
-        binding.search.toGone()
+        binding.search.hidePanel()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +60,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
 
             State.Error -> {
                 loadingDialog.hideDialog()
-                requireView().showSnackBar(ExceptionHandler.recognizeReason(state.error))
+                showSnackBar(ExceptionHandler.recognizeReason(state.error))
             }
         }
     }
@@ -74,40 +71,38 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
         state.data?.let { data ->
             root.background = AppCompatResources.getDrawable(requireContext(), if (data.isDay) R.drawable.day else R.drawable.night)
             root.setOnTouchListener { _, _ ->
-                requireView().hideKeyboard()
-                search.toGone()
+                search.hidePanel()
                 false
             }
             tvDate.text = getCurrentDateString()
-            tvCity.text = data.city
-            tvTemp.text = requireContext().getString(R.string.temp, data.temp ?: "No data")
-            tvWind.text = requireContext().getString(R.string.wind, data.wind ?: "No data")
-            tvHumidity.text = requireContext().getString(R.string.humidity, data.humidity ?: "No data")
-            tvCondition.text = data.condition
+            tvCity.setTextAnimation(data.city)
+            tvTemp.setTextAnimation(requireContext().getString(R.string.temp, data.temp ?: "No data"))
+            tvWind.setTextAnimation(requireContext().getString(R.string.wind, data.wind ?: "No data"))
+            tvHumidity.setTextAnimation(requireContext().getString(R.string.humidity, data.humidity ?: "No data"))
+            tvCondition.setTextAnimation(data.condition)
             Glide.with(requireContext()).load(data.conditionIcon).into(ivCondition)
             ivSearch.setOnClickListener {
-                search.toVisible()
-                search.focus()
+                search.showPanel()
             }
             if (data.forecast?.size != 3) {
-                requireView().showSnackBar(R.string.something_is_wrong)
+                showSnackBar(R.string.something_is_wrong)
                 return@apply
             }
             data.forecast.forEachIndexed { index, forecastDataUi ->
                 when (index) {
                     0 -> {
                         Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast1)
-                        tvForecast1Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                        tvForecast1Temp.setTextAnimation(requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp))
                     }
 
                     1 -> {
                         Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast2)
-                        tvForecast2Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                        tvForecast2Temp.setTextAnimation(requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp))
                     }
 
                     2 -> {
                         Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast3)
-                        tvForecast3Temp.text = requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp)
+                        tvForecast3Temp.setTextAnimation(requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp))
                         tvForecast3Day.text =
                             resources.getStringArray(R.array.day_of_week)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 1]
                     }

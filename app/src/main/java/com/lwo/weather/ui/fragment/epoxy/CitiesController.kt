@@ -2,7 +2,6 @@ package com.lwo.weather.ui.fragment.epoxy
 
 import com.airbnb.epoxy.EpoxyController
 import com.lwo.weather.data.search.SearchData
-import com.lwo.weather.ui.fragment.epoxy.CitiesModel_
 
 class CitiesController(private val list: List<SearchData>, private val callback: (String) -> Unit) : EpoxyController() {
 
@@ -13,7 +12,7 @@ class CitiesController(private val list: List<SearchData>, private val callback:
                 callback = this@CitiesController.callback
             }
                 .id(i++)
-                .text(location.name)
+                .text(location.name.plus("-").plus(location.country))
                 .addTo(this)
         }
     }
