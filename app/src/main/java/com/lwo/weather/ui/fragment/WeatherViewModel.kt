@@ -1,5 +1,6 @@
 package com.lwo.weather.ui.fragment
 
+import android.annotation.SuppressLint
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -14,8 +15,7 @@ import com.lwo.weather.ui.fragment.state.UiEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.launch
 
 class WeatherViewModel @AssistedInject constructor(
@@ -24,7 +24,7 @@ class WeatherViewModel @AssistedInject constructor(
     private val searchCitiesUseCase: SearchCitiesUseCase
 ) : MavericksViewModel<ScreenState>(initialState) {
 
-    private var searchJob: Job? = null
+    private var searchDisposable: Disposable? = null
 
     init {
         fetchWeatherInCity(null)
@@ -43,22 +43,20 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun searchCitiesByQuery(query: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(200)
-            searchCitiesUseCase.search(Api.API_KEY, query).collect {
-                it.getResult(
-                    success = {
-                        setState { ScreenState(search = it.result) }
-                    },
-                    failure = {
-                        setState { ScreenState(search = emptyList()) }
-                    },
-                    loading = {
-
-                    })
-            }
+        searchDisposable?.dispose()
+        searchDisposable = searchCitiesUseCase.search(Api.API_KEY, query).subscribe {
+            it.getResult(
+                success = {
+                    setState { ScreenState(search = it.result) }
+                },
+                failure = {
+                    setState { ScreenState(search = emptyList()) }
+                },
+                loading = {
+                }
+            )
         }
     }
 

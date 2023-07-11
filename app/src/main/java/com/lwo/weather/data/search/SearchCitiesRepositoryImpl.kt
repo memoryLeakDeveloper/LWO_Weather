@@ -6,6 +6,6 @@ import javax.inject.Inject
 
 class SearchCitiesRepositoryImpl @Inject constructor(private val searchCitiesDataSource: SearchCitiesDataSource) : SearchCitiesRepository {
 
-    override suspend fun search(token: String, query: String) = searchCitiesDataSource.search(token, query)
+    override fun search(token: String, query: String) = searchCitiesDataSource.search(token, query)
 
 }

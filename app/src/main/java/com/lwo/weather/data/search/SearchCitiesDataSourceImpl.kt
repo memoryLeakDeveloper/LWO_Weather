@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 class SearchCitiesDataSourceImpl @Inject constructor(private val service: SearchCitiesService) : SearchCitiesDataSource {
 
-    override suspend fun search(token: String, query: String): CloudResponse<List<SearchData>> {
-        val response = service.searchCities(token, query)
+    override fun search(token: String, query: String): CloudResponse<List<SearchData>> {
+        val response = service.searchCities(token, query).execute()
         return if (response.isSuccessful) {
             response.body()?.let { CloudResponse.Success(it.map { it.mapToData() }) } ?: run { CloudResponse.Error(Exception()) }
         } else {

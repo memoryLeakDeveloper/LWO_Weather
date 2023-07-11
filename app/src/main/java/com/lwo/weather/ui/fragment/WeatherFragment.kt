@@ -120,4 +120,8 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
         return dayOfTheWeek.plus(", ").plus(day).plus(" ").plus(month).plus("").plus(year)
     }
 
+    override fun onStop() {
+        super.onStop()
+        binding.search.hidePanel()
+    }
 }
