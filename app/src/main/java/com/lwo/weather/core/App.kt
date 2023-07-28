@@ -12,4 +12,8 @@ class App : Application() {
         super.onCreate()
         Mavericks.initialize(this, viewModelDelegateFactory = DefaultNavigationViewModelDelegateFactory())
     }
+
+    companion object {
+        var token = ""
+    }
 }

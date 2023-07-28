@@ -103,8 +103,14 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_layout), MavericksVie
                     2 -> {
                         Glide.with(requireContext()).load(forecastDataUi.icon).into(ivForecast3)
                         tvForecast3Temp.setTextAnimation(requireContext().getString(R.string.temp, forecastDataUi.minMaxTemp))
-                        tvForecast3Day.text =
-                            resources.getStringArray(R.array.day_of_week)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 1]
+                        try {
+                            tvForecast3Day.text =
+                                resources.getStringArray(R.array.day_of_week)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 1]
+                        } catch (e: ArrayIndexOutOfBoundsException) {
+                            tvForecast3Day.text =
+                                resources.getStringArray(R.array.day_of_week)[0]
+                        }
+
                     }
                 }
             }

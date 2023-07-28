@@ -2,6 +2,7 @@ package com.lwo.weather.di.weather
 
 import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.lwo.weather.core.cloud.Api
+import com.lwo.weather.core.cloud.ApiLocal
 import com.lwo.weather.data.weather.FetchWeatherDataSourceImpl
 import com.lwo.weather.data.weather.FetchWeatherService
 import com.lwo.weather.data.weather.FetchWeatherUseCaseImpl
@@ -23,7 +24,7 @@ class WeatherModule {
 
     @Provides
     fun provideFetchWeatherDataSource(api: Api): FetchWeatherDataSource = FetchWeatherDataSourceImpl(
-        api.makeService(FetchWeatherService::class.java),
+        ApiLocal().makeService(FetchWeatherService::class.java),
     )
 
     @Provides
